@@ -3,6 +3,7 @@ import { Box, VStack, HStack, Input, Button, Text } from '@chakra-ui/react';
 import { Checkbox } from '@/components/ui/checkbox';
 import FooterBar from '@/components/FooterBar';
 import FocusModal from '@/features/focus/FocusModal';
+import { openMini } from '@/features/mini/openMini';
 
 interface Objective {
   id: number;
@@ -52,7 +53,7 @@ const Home: React.FC = () => {
   };
 
   const handleRequestMini = (): void => {
-    console.info('mini mode requested - placeholder for future IPC');
+    void openMini();
   };
 
   return (

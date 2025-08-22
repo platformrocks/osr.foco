@@ -1,7 +1,7 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Box, VStack, Text, IconButton } from '@chakra-ui/react';
 import { IoContract } from 'react-icons/io5';
-import { useCountdown } from './useCountdown';
+import { useTimerPersistence } from '@/lib/hooks/useTimerPersistence';
 import TimerDisplay from './TimerDisplay';
 
 interface FocusModalProps {
@@ -23,11 +23,118 @@ const FocusModal: React.FC<FocusModalProps> = ({
   onRequestMini,
   onComplete,
 }) => {
-  const { seconds, isRunning, percent, start, pause, reset } = useCountdown({
-    initialSeconds,
-    autoStart: autoStart && isOpen,
-    onComplete,
-  });
+  const { timer, startTimer, pauseTimer, resumeTimer, resetTimer } =
+    useTimerPersistence();
+
+  const [currentSeconds, setCurrentSeconds] = useState<number>(0);
+  const [isRunning, setIsRunning] = useState<boolean>(false);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Calculate current seconds from timer state
+  const updateCurrentSeconds = useCallback(() => {
+    if (!timer.startTs || !timer.durationSec) {
+      setCurrentSeconds(0);
+      setIsRunning(false);
+      return;
+    }
+
+    const now = Date.now();
+    const startTime = timer.startTs;
+    const pausedAt = timer.pausedAt;
+
+    if (pausedAt) {
+      // Timer is paused
+      const elapsedBeforePause = pausedAt - startTime;
+      const remainingSeconds = Math.max(
+        0,
+        timer.durationSec - Math.floor(elapsedBeforePause / 1000)
+      );
+      setCurrentSeconds(remainingSeconds);
+      setIsRunning(false);
+    } else {
+      // Timer is running
+      const elapsed = now - startTime;
+      const remainingSeconds = Math.max(
+        0,
+        timer.durationSec - Math.floor(elapsed / 1000)
+      );
+      setCurrentSeconds(remainingSeconds);
+      setIsRunning(true);
+
+      // Check if timer completed
+      if (remainingSeconds === 0) {
+        onComplete?.();
+        handleReset();
+      }
+    }
+  }, [timer, onComplete]);
+
+  // Update timer state when timer changes
+  useEffect(() => {
+    updateCurrentSeconds();
+  }, [updateCurrentSeconds]);
+
+  // Update every second when running
+  useEffect(() => {
+    if (isRunning) {
+      intervalRef.current = setInterval(updateCurrentSeconds, 1000);
+    } else {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    }
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [isRunning, updateCurrentSeconds]);
+
+  // Control functions
+  const handleStart = useCallback(async () => {
+    try {
+      await startTimer(initialSeconds);
+    } catch (error) {
+      console.error('Failed to start timer:', error);
+    }
+  }, [startTimer, initialSeconds]);
+
+  const handlePause = useCallback(async () => {
+    try {
+      await pauseTimer();
+    } catch (error) {
+      console.error('Failed to pause timer:', error);
+    }
+  }, [pauseTimer]);
+
+  const handleResume = useCallback(async () => {
+    try {
+      await resumeTimer();
+    } catch (error) {
+      console.error('Failed to resume timer:', error);
+    }
+  }, [resumeTimer]);
+
+  const handleReset = useCallback(async () => {
+    try {
+      await resetTimer();
+    } catch (error) {
+      console.error('Failed to reset timer:', error);
+    }
+  }, [resetTimer]);
+
+  // Calculate progress percentage
+  const percent = timer.durationSec
+    ? Math.max(
+        0,
+        Math.min(
+          100,
+          ((timer.durationSec - currentSeconds) / timer.durationSec) * 100
+        )
+      )
+    : 0;
 
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -43,15 +150,17 @@ const FocusModal: React.FC<FocusModalProps> = ({
         case ' ':
           event.preventDefault();
           if (isRunning) {
-            pause();
+            handlePause();
+          } else if (timer.pausedAt) {
+            handleResume();
           } else {
-            start();
+            handleStart();
           }
           break;
         case 'r':
         case 'R':
           event.preventDefault();
-          reset();
+          handleReset();
           break;
         default:
           break;
@@ -60,14 +169,23 @@ const FocusModal: React.FC<FocusModalProps> = ({
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, isRunning, onClose, pause, start, reset]);
+  }, [
+    isOpen,
+    isRunning,
+    timer.pausedAt,
+    onClose,
+    handlePause,
+    handleResume,
+    handleStart,
+    handleReset,
+  ]);
 
   // Auto-start logic when modal opens
   useEffect(() => {
-    if (isOpen && autoStart && !isRunning && seconds === initialSeconds) {
-      start();
+    if (isOpen && autoStart && !isRunning && currentSeconds === 0) {
+      handleStart();
     }
-  }, [isOpen, autoStart, isRunning, seconds, initialSeconds, start]);
+  }, [isOpen, autoStart, isRunning, currentSeconds, handleStart]);
 
   return (
     <>
@@ -96,10 +214,12 @@ const FocusModal: React.FC<FocusModalProps> = ({
               right={6}
               size="lg"
               variant="ghost"
+              color={'white'}
               onClick={onRequestMini}
               zIndex={10}
               _hover={{
-                bg: 'gray.100',
+                bg: 'gray.500',
+                color: 'gray.800',
                 _dark: { bg: 'gray.800' },
               }}
             >
@@ -129,7 +249,7 @@ const FocusModal: React.FC<FocusModalProps> = ({
               </Text>
 
               {/* Timer Display */}
-              <TimerDisplay seconds={seconds} />
+              <TimerDisplay seconds={currentSeconds} />
 
               {/* Progress Bar */}
               <Box

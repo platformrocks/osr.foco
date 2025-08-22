@@ -1,0 +1,21 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "mini-window",
+  "description": "Minimal window management for Mini Mode",
+  "windows": ["*"],
+  "permissions": [
+    "core:webview:allow-create-webview-window",
+    "core:window:allow-show",
+    "core:window:allow-hide",
+    "core:window:allow-close",
+    "core:window:allow-minimize",
+    "core:window:allow-unminimize",
+    "core:window:allow-set-focus",
+    "core:window:allow-set-always-on-top",
+    "core:window:allow-set-position",
+    "core:window:allow-get-all-windows",
+    "core:window:allow-primary-monitor",
+    "core:event:allow-listen",
+    "core:event:allow-unlisten"
+  ]
+}

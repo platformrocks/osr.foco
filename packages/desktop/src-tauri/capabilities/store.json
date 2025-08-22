@@ -1,0 +1,20 @@
+{
+  "$schema": "../gen/schemas/capabilities.json",
+  "identifier": "store-capability",
+  "description": "Capability for plugin-store persistence",
+  "windows": ["main", "mini"],
+  "permissions": [
+    "store:allow-get",
+    "store:allow-set",
+    "store:allow-delete",
+    "store:allow-has",
+    "store:allow-clear",
+    "store:allow-reset",
+    "store:allow-keys",
+    "store:allow-values",
+    "store:allow-entries",
+    "store:allow-length",
+    "store:allow-load",
+    "store:allow-save"
+  ]
+}
