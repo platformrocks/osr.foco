@@ -13,9 +13,9 @@ const system = createSystem(defaultConfig, {
   globalCss: {
     body: {
       bg: 'black.50',
-      _dark: {
-        bg: '#212121',
-      },
+      // _dark: {
+      //   bg: '#212121',
+      // },
     },
   },
 });

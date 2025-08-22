@@ -1,18 +1,48 @@
 import React, { useState } from 'react';
-import { Flex, Input, IconButton, Text, HStack } from '@chakra-ui/react';
+import { Flex, Input, IconButton, HStack } from '@chakra-ui/react';
 import { MdMinimize, MdClose } from 'react-icons/md';
+import { getCurrentWindow } from '@tauri-apps/api/window';
+import { invoke } from '@tauri-apps/api/core';
 
 const TopBar: React.FC = () => {
   const [mission, setMission] = useState<string>('');
 
-  const handleMinimize = (): void => {
-    // Minimize functionality will be implemented later with Tauri
-    console.log('Minimize clicked');
+  const handleMinimize = async (): Promise<void> => {
+    try {
+      const appWindow = getCurrentWindow();
+      if (appWindow) {
+        await appWindow.minimize();
+      } else {
+        console.warn('Window instance not available');
+      }
+    } catch (error) {
+      console.error('Failed to minimize window:', error);
+      // Fallback using invoke
+      try {
+        await invoke('minimize_window');
+      } catch (fallbackError) {
+        console.error('Fallback minimize also failed:', fallbackError);
+      }
+    }
   };
 
-  const handleClose = (): void => {
-    // Close functionality will be implemented later with Tauri
-    console.log('Close clicked');
+  const handleClose = async (): Promise<void> => {
+    try {
+      const appWindow = getCurrentWindow();
+      if (appWindow) {
+        await appWindow.close();
+      } else {
+        console.warn('Window instance not available');
+      }
+    } catch (error) {
+      console.error('Failed to close window:', error);
+      // Fallback using invoke
+      try {
+        await invoke('close_window');
+      } catch (fallbackError) {
+        console.error('Fallback close also failed:', fallbackError);
+      }
+    }
   };
 
   return (
@@ -25,15 +55,11 @@ const TopBar: React.FC = () => {
       px={4}
       style={{ WebkitAppRegion: 'drag' } as React.CSSProperties}
       _dark={{
-        bg: 'gray.700',
+        bg: 'blackAlpha.100',
         borderColor: 'gray.600',
       }}
     >
       <HStack gap={4} flex="1">
-        <Text fontWeight="bold" fontSize="lg" color="brand.600">
-          FOCO
-        </Text>
-
         <Input
           placeholder="What are we doing today?"
           value={mission}

@@ -17,7 +17,11 @@ const Sidebar: React.FC = () => {
     <VStack
       width="60px"
       bg="gray.100"
-      _dark={{ bg: 'gray.800' }}
+      _dark={{
+        bg: 'blackAlpha.50',
+        borderRightColor: 'gray.900',
+      }}
+      borderRightWidth={1}
       p={2}
       gap={2}
       height="100vh"

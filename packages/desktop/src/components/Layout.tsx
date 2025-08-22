@@ -9,11 +9,11 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
-    <Flex height="100vh" direction="row">
+    <Flex height="100vh" direction="row" overflow={'hidden'}>
       <Sidebar />
       <Flex direction="column" flex="1">
         <TopBar />
-        <Box flex="1" overflow="auto" p={4}>
+        <Box flex="1" overflow="hidden" p={4}>
           {children}
         </Box>
       </Flex>

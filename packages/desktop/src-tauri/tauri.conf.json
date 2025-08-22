@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "foco-desktop",
+  "productName": "Foco",
   "version": "0.1.0",
   "identifier": "osr.foco-desktop",
   "build": {
@@ -12,9 +12,12 @@
   "app": {
     "windows": [
       {
-        "title": "foco-desktop",
+        "title": "Foco",
         "width": 800,
-        "height": 600
+        "height": 600,
+        "decorations": false,
+        "transparent": false,
+        "resizable": true
       }
     ],
     "security": {

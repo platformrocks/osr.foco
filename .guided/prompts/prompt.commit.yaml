@@ -1,0 +1,199 @@
+$schema: .guided/schema/prompt.schema.json
+apiVersion: ops/v1
+id: foco.git.cc.commit+changelog
+title: Conventional Commit + Changelog (safe, spec-compliant)
+persona: ReleaseEngineer
+createdBy: gui
+category: release
+difficulty: easy
+workspace: "./"
+
+context: |
+  Repository: Foco (id: osr.foco). Use pnpm.
+  Goal: 1) analyze pending git changes; 2) create a Conventional Commit per the spec (https://www.conventionalcommits.org/en/v1.0.0/); 3) update CHANGELOG.md without breaking its structure.
+  Notes:
+    - Run lint/format BEFORE committing.
+    - If multiple packages changed (desktop/extension/cli), use scope "repo" (one commit).
+    - Use pnpm dlx for conventional-changelog (no devDep pollution).
+    - Do NOT bump version or create tag here.
+
+  Conventional Commits guardrails (enforced):
+    - type ∈ {feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert}
+    - optional scope in parentheses: kebab-case (e.g., desktop, extension, cli, repo)
+    - optional "!" for breaking change: type(scope)!: subject
+    - subject: imperative, <= 72 chars
+    - body: free text
+    - footer: supports "BREAKING CHANGE: ..." and issue refs "Refs: #123" / "Closes: #123"
+
+  Environment overrides (optional):
+    - COMMIT_TYPE: feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert (default: chore)
+    - COMMIT_SCOPE: kebab-case scope (auto-detected if empty)
+    - COMMIT_SUBJECT: short subject (default: "routine updates")
+    - COMMIT_BODY: long description (optional)
+    - COMMIT_BREAKING: if non-empty, adds "!" after type/scope and "BREAKING CHANGE: <text>" in footer
+    - COMMIT_FOOTER: extra footer lines (e.g., "Refs: #123")
+    - COMMIT_SIGNOFF: "true" to add --signoff
+
+output:
+  - file: .guided/ops/git-summary.md
+    language: markdown
+    rules:
+      - Save status, diff shortstat, and changed files.
+
+  - file: .guided/ops/last-commit.msg
+    language: plaintext
+    rules:
+      - Save the exact Conventional Commit message used.
+
+steps:
+  - id: verify-git
+    title: Verify git repo and pending changes
+    actions:
+      - run: test -d .git || (echo "Not a git repo. Run: git init" && exit 1)
+      - run: mkdir -p .guided/ops
+      - run: git status --porcelain=v1 > .guided/ops/.pending || true
+      - run: |
+          if [ ! -s .guided/ops/.pending ]; then
+            echo "No changes to commit."
+            exit 0
+          fi
+
+  - id: analyze
+    title: Analyze changes and infer scope
+    actions:
+      - run: |
+          {
+            echo "# Pending changes"
+            echo
+            git status
+            echo
+            echo "## Diff summary"
+            git diff --shortstat || true
+            echo
+            echo "## Changed files"
+            git diff --name-only
+          } > .guided/ops/git-summary.md
+      - run: |
+          FILES="$(git diff --name-only | tr '\n' ' ')"
+          SCOPE="repo"
+          case "$FILES" in
+            *packages/desktop/*)  MATCH_DESKTOP=1 ;;
+          esac
+          case "$FILES" in
+            *packages/extension/*) MATCH_EXTENSION=1 ;;
+          esac
+          case "$FILES" in
+            *packages/cli/*) MATCH_CLI=1 ;;
+          esac
+          COUNT=$(( ${MATCH_DESKTOP:-0} + ${MATCH_EXTENSION:-0} + ${MATCH_CLI:-0} ))
+          if [ "$COUNT" = "1" ]; then
+            [ "${MATCH_DESKTOP:-0}" = "1" ] && SCOPE="desktop"
+            [ "${MATCH_EXTENSION:-0}" = "1" ] && SCOPE="extension"
+            [ "${MATCH_CLI:-0}" = "1" ] && SCOPE="cli"
+          fi
+          echo "${COMMIT_SCOPE:-$SCOPE}" > .guided/ops/.scope
+
+  - id: format+lint
+    title: Format and lint before committing
+    actions:
+      - run: pnpm format || true
+      - run: pnpm lint || true
+      - run: git add -A
+
+  - id: build-commit-msg
+    title: Build Conventional Commit message (spec-compliant)
+    actions:
+      - run: |
+          TYPE="${COMMIT_TYPE:-chore}"
+          SCOPE="$(cat .guided/ops/.scope 2>/dev/null || echo repo)"
+          SUBJECT="${COMMIT_SUBJECT:-routine updates}"
+          BODY="${COMMIT_BODY:-}"
+          BREAK="${COMMIT_BREAKING:-}"
+          FOOTER="${COMMIT_FOOTER:-}"
+
+          # Validate type per spec
+          case "$TYPE" in
+            feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert) ;;
+            *) echo "Invalid COMMIT_TYPE '$TYPE' (see Conventional Commits)."; exit 1 ;;
+          esac
+
+          # Enforce kebab-case scope (basic check) if provided
+          if [ -n "$SCOPE" ] && ! echo "$SCOPE" | grep -Eq '^[a-z0-9]+(-[a-z0-9]+)*$'; then
+            echo "Invalid scope '$SCOPE' (use kebab-case)."; exit 1
+          fi
+
+          # Enforce subject length <= 72
+          if [ "${#SUBJECT}" -gt 72 ]; then
+            echo "Subject too long (>72 chars)."; exit 1
+          fi
+
+          # Compose header
+          BANG=""
+          FOOTER_LINES=""
+          if [ -n "$BREAK" ]; then
+            BANG="!"
+            FOOTER_LINES="BREAKING CHANGE: ${BREAK}"
+          fi
+
+          HEADER="$TYPE"
+          [ -n "$SCOPE" ] && HEADER="$HEADER($SCOPE)"
+          HEADER="$HEADER$BANG: $SUBJECT"
+
+          # Append additional footer if provided
+          if [ -n "$FOOTER" ]; then
+            [ -n "$FOOTER_LINES" ] && FOOTER_LINES="$FOOTER_LINES\n$FOOTER" || FOOTER_LINES="$FOOTER"
+          fi
+
+          # Assemble final message
+          {
+            printf "%s\n\n" "$HEADER"
+            [ -n "$BODY" ] && printf "%s\n\n" "$BODY"
+            [ -n "$FOOTER_LINES" ] && printf "%b\n" "$FOOTER_LINES"
+          } > .guided/ops/last-commit.msg
+      - run: cat .guided/ops/last-commit.msg
+
+  - id: commit
+    title: Create commit
+    actions:
+      - run: |
+          SIGN=""
+          [ "${COMMIT_SIGNOFF:-}" = "true" ] && SIGN="--signoff"
+          git commit -F .guided/ops/last-commit.msg $SIGN
+
+  - id: update-changelog
+    title: Update CHANGELOG.md (append, no version bump)
+    actions:
+      - run: test -f CHANGELOG.md || echo "# Changelog\n" > CHANGELOG.md
+      - run: pnpm dlx conventional-changelog -p angular -i CHANGELOG.md -s --commit-path .
+
+  - id: show-result
+    title: Show result
+    actions:
+      - run: echo "Commit created:" && cat .guided/ops/last-commit.msg
+      - run: echo "CHANGELOG head:" && sed -n '1,80p' CHANGELOG.md
+
+dependencies:
+  - name: git
+    version: ">=2.30"
+  - name: Node.js
+    version: ">=20"
+  - name: pnpm
+    version: ">=9"
+
+env:
+  # Optional: COMMIT_TYPE, COMMIT_SCOPE, COMMIT_SUBJECT, COMMIT_BODY, COMMIT_BREAKING, COMMIT_FOOTER, COMMIT_SIGNOFF
+  {}
+
+tags:
+  - git
+  - conventional-commits
+  - changelog
+  - release
+  - pnpm
+
+acceptanceCriteria:
+  - "Early-exit if there are no changes."
+  - "Commit message strictly follows Conventional Commits v1.0.0 (types validated, subject <= 72, kebab-case scope)."
+  - "Format/Lint run before commit; changes are staged."
+  - "CHANGELOG.md updated via conventional-changelog without altering the top-level structure."
+  - "Exact commit message is saved to .guided/ops/last-commit.msg and a diff summary to .guided/ops/git-summary.md."

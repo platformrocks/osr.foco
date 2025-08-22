@@ -10,10 +10,8 @@ const FooterBar: React.FC = () => {
       borderTop="1px"
       borderColor="gray.200"
       p={4}
-      bg="gray.50"
       _dark={{
-        borderColor: 'gray.600',
-        bg: 'gray.800',
+        borderTopColor: 'gray.200',
       }}
     >
       <Flex align="center" justify="space-between">
