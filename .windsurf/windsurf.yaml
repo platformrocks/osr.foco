@@ -1,0 +1,117 @@
+project:
+  name: 'OSR.Foco'
+  description: 'Desktop focus/productivity application built with Tauri + React'
+  type: 'desktop-app'
+
+stack:
+  frontend:
+    - react: '19.1.0'
+    - typescript: '5.8.3'
+    - vite: '7.0.4'
+  backend:
+    - rust: 'stable'
+    - tauri: '2.x'
+  tooling:
+    - pnpm: 'workspaces'
+    - eslint: '9.0.0'
+    - prettier: 'latest'
+
+workspace:
+  type: 'monorepo'
+  manager: 'pnpm'
+  packages:
+    - 'packages/desktop' # Active Tauri + React app
+    - 'packages/extension' # Future browser extension
+    - 'packages/cli' # Future CLI tool
+
+conventions:
+  naming:
+    files: 'kebab-case'
+    components: 'PascalCase'
+    variables: 'camelCase'
+    types: 'PascalCase'
+    constants: 'SCREAMING_SNAKE_CASE'
+
+  typescript:
+    strict: true
+    explicit_types: true
+    no_any: true
+    explicit_returns: true
+
+  react:
+    components: 'functional-only'
+    hooks: 'required'
+    props_typing: 'explicit'
+    performance: 'memo-aware'
+
+architecture:
+  pattern: 'frontend-backend-separation'
+  communication: 'tauri-ipc'
+  data_flow: 'unidirectional'
+
+  domains:
+    - 'task-management'
+    - 'focus-sessions'
+    - 'distraction-blocking'
+    - 'configuration'
+
+quality_gates:
+  pre_commit:
+    - 'eslint'
+    - 'prettier'
+    - 'typescript_check'
+
+  pre_merge:
+    - 'build_success'
+    - 'code_review'
+    - 'documentation_update'
+
+development:
+  dev_server: 'http://localhost:1420'
+  commands:
+    install: 'pnpm bootstrap'
+    dev: 'pnpm dev'
+    build: 'pnpm build'
+    lint: 'pnpm lint'
+    format: 'pnpm format'
+    commit: 'pnpm commit'
+
+security:
+  current_status: 'csp_disabled' # ⚠️ Known risk
+  requirements:
+    - 'input_validation'
+    - 'ipc_security'
+    - 'error_handling'
+    - 'permission_model'
+
+testing:
+  current_status: 'not_implemented' # ⚠️ Critical gap
+  planned:
+    - 'jest'
+    - 'react_testing_library'
+    - 'rust_native_tests'
+
+documentation:
+  location: '.guided/'
+  includes:
+    - 'architecture'
+    - 'assessment'
+    - 'testing_strategy'
+    - 'operation_guides'
+
+tags:
+  - 'desktop'
+  - 'productivity'
+  - 'focus'
+  - 'tauri'
+  - 'react'
+  - 'typescript'
+  - 'rust'
+  - 'monorepo'
+  - 'pnpm'
+
+team:
+  workflow: 'conventional_commits'
+  branching: 'feature_branches'
+  review: 'required'
+  automation: 'husky_hooks'
