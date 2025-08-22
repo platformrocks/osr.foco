@@ -1,5 +1,27 @@
 {
   "name": "osr.foco",
+  "version": "0.1.0",
+  "description": "A cross-platform productivity app designed to help users stay focused and accomplish their daily goals",
+  "author": "Gui Santos <guilherme@platform.rocks>",
+  "license": "MIT",
+  "homepage": "https://opensource.rocks",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/platformrocks/osr.foco.git"
+  },
+  "bugs": {
+    "url": "https://github.com/platformrocks/osr.foco/issues"
+  },
+  "keywords": [
+    "productivity",
+    "focus",
+    "pomodoro",
+    "task-management",
+    "tauri",
+    "react",
+    "typescript",
+    "desktop-app"
+  ],
   "private": true,
   "type": "module",
   "scripts": {

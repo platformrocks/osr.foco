@@ -18,11 +18,11 @@ The mission of Foco is to provide discipline without friction: a lightweight, tr
 
 ```
 packages/
-├── desktop/     # Main Tauri + React application
-│   ├── src/     # React frontend (TypeScript)
-│   └── src-tauri/ # Rust backend
-├── extension/   # Future browser extension (placeholder)
-└── cli/         # Future CLI tool (placeholder)
+├── desktop/         # Main Tauri + React application
+│   ├── src/         # React frontend (TypeScript)
+│   └── src-tauri/   # Rust backend
+├── extension/       # Future browser extension (placeholder)
+└── cli/             # Future CLI tool (placeholder)
 ```
 
 **Technology Stack:**
@@ -121,7 +121,7 @@ Comprehensive project documentation available in `.guided/`:
 
 We welcome contributions! Please see:
 
-- **Contributing Guide**: `.github/CONTRIBUTING.md`
+- **Contributing Guide**: [CONTRIBUTING.md](CONTRIBUTING.md)
 - **Code Standards**: Documented in `.guided/architecture/guardrails.md`
 - **Development Setup**: `.guided/base/setup.instructions.md`
 
@@ -141,13 +141,14 @@ We welcome contributions! Please see:
 
 ## License
 
-[License information to be added]
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Links
 
+- **Homepage**: [opensource.rocks](https://opensource.rocks)
 - **Documentation**: `.guided/` folder
-- **Issues**: [GitHub Issues]
-- **Discussions**: [GitHub Discussions]
+- **Issues**: [GitHub Issues](https://github.com/platformrocks/osr.foco/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/platformrocks/osr.foco/discussions)
 
 ---
 
