@@ -21,7 +21,7 @@ const FooterBar: React.FC = () => {
         <Switch
           checked={blockBrainrot}
           onCheckedChange={(details) => setBlockBrainrot(details.checked)}
-          colorPalette="brand"
+          colorPalette="blue"
         />
       </Flex>
     </Box>

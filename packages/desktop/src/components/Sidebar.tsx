@@ -1,7 +1,7 @@
 import React from 'react';
 import { VStack, IconButton, Spacer } from '@chakra-ui/react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { MdLightMode, MdDarkMode, MdGpsFixed, MdList } from 'react-icons/md';
+import { MdLightMode, MdDarkMode, MdList, MdTimer } from 'react-icons/md';
 import { useTheme } from 'next-themes';
 
 const Sidebar: React.FC = () => {
@@ -32,7 +32,7 @@ const Sidebar: React.FC = () => {
         variant={location.pathname === '/' ? 'solid' : 'ghost'}
         onClick={() => navigate('/')}
       >
-        <MdGpsFixed />
+        <MdTimer />
       </IconButton>
 
       <IconButton

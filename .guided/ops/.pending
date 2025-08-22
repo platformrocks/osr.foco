@@ -1,0 +1,7 @@
+ M .guided/ops/.scope
+ M packages/desktop/src/components/FooterBar.tsx
+ M packages/desktop/src/components/Sidebar.tsx
+ M packages/desktop/src/pages/Home.tsx
+?? .guided/ops/.pending
+?? .guided/ops/last-commit.msg
+?? packages/desktop/src/features/
