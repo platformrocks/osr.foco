@@ -9,7 +9,9 @@ The mission of Foco is to provide discipline without friction: a lightweight, tr
 ## Core Features
 
 `▤` **Task Management** - Create, organize, and track your daily tasks
+
 `⏱` **Focus Sessions** - Pomodoro-style work sessions with timing
+
 `☂` **Distraction Blocking** - Block websites and apps during focus time
 
 ## Architecture
