@@ -1,17 +1,16 @@
 # OSR.Foco
 
-A desktop focus and productivity application built with Tauri + React, designed to help users manage tasks, track focus sessions, and block distractions during work periods.
-
 ## Overview
 
-OSR.Foco is a cross-platform desktop application that combines task management with focus session tracking (pomodoro technique) and distraction blocking capabilities. Built with modern web technologies running in a native desktop container for optimal performance and user experience.
+Foco is a cross-platform productivity app designed to help users stay focused and accomplish their daily goals. It combines a minimalist Pomodoro-style timer with structured daily objectives and distraction blocking.
+
+The mission of Foco is to provide discipline without friction: a lightweight, transparent, and effective tool to structure daily work, reinforce habits, and minimize digital distractions.
 
 ## Core Features
 
-🎯 **Task Management** - Create, organize, and track your daily tasks
-⏰ **Focus Sessions** - Pomodoro-style work sessions with timing
-🚫 **Distraction Blocking** - Block websites and apps during focus time
-⚙️ **Customization** - Themes, notifications, and personal preferences
+`▤` **Task Management** - Create, organize, and track your daily tasks
+`⏱` **Focus Sessions** - Pomodoro-style work sessions with timing
+`☂` **Distraction Blocking** - Block websites and apps during focus time
 
 ## Architecture
 
@@ -77,28 +76,25 @@ pnpm release          # Create release with changelog
 
 ## Project Features
 
-### ✅ Implemented
+### `☑` Implemented
 
 - Modern monorepo structure with pnpm workspaces
 - Tauri + React + TypeScript foundation
 - Comprehensive tooling (ESLint, Prettier, Husky)
 - Conventional commits with automated changelog
 - Cross-platform desktop targeting
-- Guided Engineering documentation system
 
-### 🚧 In Development
+### `☐` In Development
 
 - Core task management functionality
 - Focus session timer implementation
 - Website blocking capabilities
 - User interface and experience
 
-### 📋 Planned
+### `☐` Planned
 
 - Browser extension companion
 - Command-line interface tool
-- Advanced productivity features
-- Cloud synchronization
 
 ## Code Standards
 
@@ -109,15 +105,6 @@ This project maintains high code quality standards:
 - **Performance First**: Optimized for desktop usage
 - **Security Focused**: Input validation and secure practices
 - **Well Documented**: Comprehensive documentation in `.guided/`
-
-## AI/IDE Integration
-
-Enhanced support for AI assistants and IDEs:
-
-- **GitHub Copilot**: Instructions in `.github/copilot-instructions.md`
-- **Claude**: Project context in `claude-project.md`
-- **Windsurf**: Configuration in `.windsurf/windsurf.yaml`
-- **Continue**: Settings in `.continue/continue.yaml`
 
 ## Documentation
 
@@ -162,4 +149,4 @@ We welcome contributions! Please see:
 
 ---
 
-**Built with ❤️ for productivity and focus** 🚀
+_Built with 💚 for your brain_

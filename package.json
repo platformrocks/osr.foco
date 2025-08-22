@@ -4,20 +4,26 @@
   "type": "module",
   "scripts": {
     "bootstrap": "pnpm -r install",
-    "dev": "pnpm --filter ./packages/desktop dev",
+    "dev": "pnpm --filter ./packages/desktop tauri dev",
     "build": "pnpm --filter ./packages/desktop build",
-    "open": "pnpm --filter ./packages/desktop tauri dev",
+    "preview": "pnpm --filter ./packages/desktop tauri build",
     "lint": "eslint packages/desktop/src --ext .js,.ts,.tsx",
     "lint:fix": "pnpm lint -- --fix",
-    "format": "prettier --write 'packages/desktop/src/**/*.{js,ts,tsx,json,md}'",
+    "format": "prettier --write 'packages/**/*.{js,ts,tsx,json,md}'",
+    "format:check": "prettier --check 'packages/**/*.{js,ts,tsx,json,md}'",
+    "type-check": "pnpm --filter ./packages/desktop type-check",
+    "test": "pnpm --filter ./packages/desktop test",
     "release": "release-it",
     "commit": "cz",
     "tauri": "pnpm --filter ./packages/desktop tauri",
-    "prepare": "husky"
+    "prepare": "husky",
+    "clean": "pnpm -r clean && rm -rf node_modules",
+    "reset": "pnpm clean && pnpm bootstrap"
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",
     "@release-it/conventional-changelog": "^10.0.1",
+    "@types/node": "^24.3.0",
     "commitizen": "^4.3.1",
     "cz-conventional-changelog": "^3.3.0",
     "eslint": "^9.33.0",
@@ -41,5 +47,8 @@
     "*.{js,ts,tsx}": [
       "eslint --fix"
     ]
+  },
+  "dependencies": {
+    "react-icons": "^5.5.0"
   }
 }

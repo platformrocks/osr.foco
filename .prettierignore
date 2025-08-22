@@ -4,3 +4,7 @@ build
 target
 packages/*/dist
 packages/*/build
+packages/*/target
+packages/**/target
+packages/**/dist
+packages/**/build

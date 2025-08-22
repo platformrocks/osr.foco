@@ -1,9 +1,13 @@
 {
   "git": {
-    "commitMessage": "chore: release v${version}"
+    "commitMessage": "chore: release v${version}",
+    "tagName": "v${version}",
+    "push": true,
+    "requireCleanWorkingDir": true
   },
   "github": {
-    "release": true
+    "release": true,
+    "releaseName": "Release v${version}"
   },
   "plugins": {
     "@release-it/conventional-changelog": {
@@ -12,7 +16,7 @@
     }
   },
   "hooks": {
-    "before:init": ["pnpm format", "pnpm lint"],
-    "before:release": ["pnpm build"]
+    "before:init": ["pnpm format:check", "pnpm lint", "pnpm type-check"],
+    "before:release": ["pnpm test", "pnpm build"]
   }
 }

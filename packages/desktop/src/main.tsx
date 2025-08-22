@@ -1,9 +1,15 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
+import { createRoot } from 'react-dom/client';
+import { HashRouter } from 'react-router-dom';
+import { Provider } from './components/ui/provider';
 import App from './App';
 
-ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <App />
+    <Provider>
+      <HashRouter>
+        <App />
+      </HashRouter>
+    </Provider>
   </React.StrictMode>
 );
